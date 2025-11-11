@@ -25,6 +25,9 @@ services:
       
       # Mount cache to /workspace/.cache
       - ${HOST_CACHE_PATH}:${PROJECT_PATH}/.cache:rw
+
+      # Mount ssh keys to /root/.ssh
+      - ~/.ssh:/root/.ssh
     
     stdin_open: true
     tty: true
