@@ -5,11 +5,13 @@ services:
       dockerfile: Dockerfile
     image: deepspeed-training:latest
     container_name: deepspeed-training
+    ports:
+      - "5100:22"
     
     privileged: true
     runtime: nvidia
     
-    command: /bin/bash -c "/usr/sbin/sshd && tail -f /dev/null"
+    command: /workspace/DeepSpeedExamples/applications/DeepSpeed-Chat/entrypoint.sh
     
     environment:
       - PROJECT_PATH=${PROJECT_PATH:-/workspace}
@@ -26,8 +28,10 @@ services:
       # Mount cache to /workspace/.cache
       - ${HOST_CACHE_PATH}:${PROJECT_PATH}/.cache:rw
 
-      # Mount ssh keys to /root/.ssh
-      - ~/.ssh:/root/.ssh
+      # Mount ssh keys to a temporary volume
+      # Volume is temporary because we need to change the permissions on .ssh files to root
+      # within the container
+      - ~/.ssh:/tmp/host_ssh:ro
     
     stdin_open: true
     tty: true
