@@ -8,6 +8,14 @@ if [ -d /tmp/host_ssh ]; then
     chown -R root:root /root/.ssh
     chmod 700 /root/.ssh
     chmod 600 /root/.ssh/id_rsa /root/.ssh/authorized_keys
+    touch /root/.ssh/config
+    chmod 600 /root/.ssh/config
+    echo "StrictHostKeyChecking no" > /root/.ssh/config && \
+    echo "UserKnownHostsFile=/dev/null" >> /root/.ssh/config && \
+    cat /root/.ssh/authorized_keys && \
+    cat /root/.ssh/id_rsa.pub >> /root/.ssh/authorized_keys && \
+    cat /root/.ssh/authorized_keys && \
+    echo "Finished SSH setup..."
 fi
 
 # Start SSHD
