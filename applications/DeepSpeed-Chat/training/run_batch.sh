@@ -32,7 +32,7 @@ for hostfile in "$hostfiles_folder_path"/hostfile_*; do
     # Submit the job to the login node in parallel
     echo $cmd_job
     echo $login_node
-    timeout ${timeout_seconds}s ssh -t "$login_node" "$cmd_job" &
+    timeout ${timeout_seconds}s ssh -t "$login_node" -p 5100 "$cmd_job" &
   fi
 done
 
