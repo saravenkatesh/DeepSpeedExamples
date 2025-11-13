@@ -197,24 +197,19 @@ def parse_args():
 
 
 def main():
-    print("parsing args...")
     args = parse_args()
 
     if args.local_rank == -1:
-        print("setting torch device...")
         device = torch.device("cuda")
     else:
-        print("setting device with args...")
         torch.cuda.set_device(args.local_rank)
         device = torch.device("cuda", args.local_rank)
         # Initializes the distributed backend which will take care of sychronizing nodes/GPUs
         # torch.distributed.init_process_group(backend='nccl')
         deepspeed.init_distributed()
 
-    print("getting rank...")
     args.global_rank = torch.distributed.get_rank()
 
-    print("setting config...")
     ds_config = get_train_ds_config(offload=args.offload,
                                     stage=args.zero_stage,
                                     enable_tensorboard=args.enable_tensorboard,
@@ -227,18 +222,14 @@ def main():
         ) * args.gradient_accumulation_steps
 
     # If passed along, set the training seed now.
-    print("setting seed...")
     set_random_seed(args.seed)
 
     torch.distributed.barrier()
 
-    print("loading tokenizer...")
     tokenizer = load_hf_tokenizer(args.model_name_or_path, fast_tokenizer=True)
     tokenizer.pad_token = tokenizer.eos_token
     # make sure tokenizer is right pad in our logic
     tokenizer.padding_side = 'right'
-
-    print("creating model...")
     model = create_hf_model(AutoModelForCausalLM,
                             args.model_name_or_path,
                             tokenizer,
@@ -252,7 +243,6 @@ def main():
             model = only_optimize_lora_parameters(model)
 
     # Prepare the data
-    print("prepping data...")
     train_phase = 1
     train_dataset, eval_dataset = create_prompt_dataset(
         args.local_rank,
@@ -304,7 +294,6 @@ def main():
         return perplexity
 
     if not args.skip_train:
-        print("starting training...")
         # Split weights in two groups, one with weight decay and the other not.
         optimizer_grouped_parameters = get_optimizer_grouped_parameters(
             model, args.weight_decay)
@@ -323,7 +312,6 @@ def main():
             num_training_steps=args.num_train_epochs * num_update_steps_per_epoch,
         )
 
-        print("initializing...")
         model, optimizer, _, lr_scheduler = deepspeed.initialize(
             model=model,
             optimizer=optimizer,
@@ -337,7 +325,6 @@ def main():
             model.gradient_checkpointing_enable()
         
         # Train!
-        print("training....")
         print_rank_0("***** Running training *****", args.global_rank)
         # print_rank_0(
         #     f"***** Evaluating perplexity, Epoch {0}/{args.num_train_epochs} *****",

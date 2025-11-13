@@ -7,7 +7,7 @@ services:
     container_name: deepspeed-training
     ports:
       - "5100:22"
-      - "29570:29570"
+      - "29500:29500"
     
     privileged: true
     runtime: nvidia
