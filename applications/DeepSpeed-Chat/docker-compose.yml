@@ -6,8 +6,8 @@ services:
     image: deepspeed-training:latest
     container_name: deepspeed-training
     ports:
-      - "5100:22"
-      - "29500:29500"
+      - "${DOCKER_SSH_PORT:-5100}:22"
+      - "${DOCKER_MASTER_PORT:-29500}:${DOCKER_MASTER_PORT:-29500}" # 29500 is DeepSpeed's default master port
     
     privileged: true
     runtime: nvidia
@@ -21,6 +21,11 @@ services:
       - HF_DATASETS_CACHE=${PROJECT_PATH:-/workspace}/.cache/huggingface/datasets
       - NVIDIA_VISIBLE_DEVICES=all
       - NVIDIA_DRIVER_CAPABILITIES=compute,utility
+      # Expose the ports to the container environment
+      # Note that docker doesn't support defining defaults through variables, so any change to port defaults
+      # needs to be made both in the port bindings and in the exposed port variables
+      - SSH_PORT=${DOCKER_SSH_PORT:-5100}
+      - MASTER_PORT=${DOCKER_MASTER_PORT:-29500}
     
     volumes:
       # Mount DeepSpeedExamples repo to /workspace/DeepSpeedExamples

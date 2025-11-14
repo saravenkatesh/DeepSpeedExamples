@@ -16,7 +16,7 @@ RUN apt-get update && apt-get install -y \
     openssh-server \
     openssh-client \
     nvtop \
-    pdsh \
+    pdsh \ # Needed for multi-node DeepSpeed SSHing
     && rm -rf /var/lib/apt/lists/*
 
 # Set python3.10 as default
