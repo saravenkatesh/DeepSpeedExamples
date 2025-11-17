@@ -1,6 +1,7 @@
 #!/bin/bash
 
 # Copy SSH keys from mounted directory if present and not already set up
+# Change permissions to root
 if [ -d /tmp/host_ssh ]; then
     echo "Copying SSH keys from /tmp/host_ssh to /root/.ssh..."
     mkdir -p /root/.ssh
