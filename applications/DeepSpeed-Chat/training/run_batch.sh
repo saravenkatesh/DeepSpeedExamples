@@ -37,7 +37,7 @@ for hostfile in "$hostfiles_folder_path"/hostfile_*; do
     cmd_job="export PROJECT_PATH=${PROJECT_PATH} && cd ${PROJECT_PATH}/DeepSpeedExamples/applications/DeepSpeed-Chat/training && ./${script_name}.sh $job_name $hostfiles_folder_path/$filename $output_folder_path"
 
     # Submit the job to the login node in parallel
-    timeout ${timeout_seconds}s ssh -t "$login_node" -p $login_node_port "$cmd_job" &
+    timeout ${timeout_seconds}s ssh -t "$login_node" -p $login_node_port "export SSH_PORT=$login_node_port; $cmd_job" &
   fi
 done
 

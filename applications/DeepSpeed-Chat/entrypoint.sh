@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# Change the container's SSH port to that specified by the env var SSH_PORT
+sed -i "s/^#Port 22/Port $SSH_PORT/" /etc/ssh/sshd_config
+echo "Set SSHD to port $SSH_PORT"
+
 # Copy SSH keys from mounted directory if present and not already set up
 # Change permissions to root
 if [ -d /tmp/host_ssh ]; then

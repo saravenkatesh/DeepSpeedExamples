@@ -5,9 +5,7 @@ services:
       dockerfile: Dockerfile
     image: deepspeed-training:latest
     container_name: deepspeed-training
-    ports:
-      - "${DOCKER_SSH_PORT:-5100}:22"
-      - "${DOCKER_MASTER_PORT:-29500}:${DOCKER_MASTER_PORT:-29500}" # 29500 is DeepSpeed's default master port
+    network_mode: "host"
     
     privileged: true
     runtime: nvidia

@@ -1,4 +1,4 @@
-FROM nvidia/cuda:11.8.0-cudnn8-devel-ubuntu22.04
+FROM nvidia/cuda:12.8.1-cudnn-devel-ubuntu22.04
 
 ENV DEBIAN_FRONTEND=noninteractive
 ENV PYTHONUNBUFFERED=1
@@ -34,7 +34,7 @@ RUN python -m pip install --upgrade pip setuptools wheel
 WORKDIR /workspace
 
 # Install PyTorch first with CUDA 11.8 support
-RUN pip install torch==2.1.0 torchvision==0.16.0 torchaudio==2.1.0 --index-url https://download.pytorch.org/whl/cu118
+RUN pip install torch==2.9.0 torchvision==0.24.1+cu128 torchaudio==2.9.1+cu128 --index-url https://download.pytorch.org/whl/cu118
 
 # Copy and install other dependencies
 COPY training/requirements_freeze.txt ./
