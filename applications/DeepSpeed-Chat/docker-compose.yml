@@ -2,13 +2,36 @@ services:
   deepspeed-training:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: ${DOCKERFILE_PATH:-dockerfiles/Dockerfile-A10-22.04}
     image: deepspeed-training:latest
     container_name: deepspeed-training
+
+    # Running in network-host mode ensures that the node network is visible to
+    # processes within the container.
+    # If running without host mode, DeepSpeed's master port must be exposed to
+    # the container.  I.e.
+    # ports:
+    #   - "${SSH_PORT:-22}:${SSH_PORT:-22}"
+    #   - "${DOCKER_MASTER_PORT:-29500}:${DOCKER_MASTER_PORT:-29500}"
     network_mode: "host"
     
     privileged: true
     runtime: nvidia
+
+    ulimits:
+      # Defaults from 
+      # https://lambdalabs.atlassian.net/wiki/spaces/HPC/pages/582844431/DeepSpeed+Cluster+ML+Test+Guide#Adjust-file-and-memory-limits-if-necessary-(%3E32-nodes)
+      nofile:
+        soft: ${DOCKER_NOFILE_SOFT:-2000000}
+        hard: ${DOCKER_NOFILE_HARD:-2000000}
+      noproc:
+        soft: ${DOCKER_NOPROC_SOFT:-1000000}
+        hard: ${DOCKER_NOPROC_HARD:-1000000}
+      # memlock is required both for running large workflows and for integration
+      # with infiniband, so we always set to infinity
+      memlock:
+        soft: -1
+        hard: -1
     
     command: /workspace/DeepSpeedExamples/applications/DeepSpeed-Chat/entrypoint.sh
     
@@ -40,6 +63,6 @@ services:
     stdin_open: true
     tty: true
     ipc: host
-    shm_size: '32gb'
+    shm_size: '1500gb'
     
     working_dir: /workspace/DeepSpeedExamples/applications/DeepSpeed-Chat/training

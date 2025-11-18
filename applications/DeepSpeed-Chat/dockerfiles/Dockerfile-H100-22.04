@@ -1,0 +1,47 @@
+from nvidia/cuda:11.8.0-cudnn8-devel-ubuntu22.04
+
+env debian_frontend=noninteractive
+env pythonunbuffered=1
+
+# install system dependencies including ssh and nvtop
+run apt-get update && apt-get install -y \
+    python3.10 \
+    python3.10-dev \
+    python3-pip \
+    python3-pybind11 \
+    git \
+    curl \
+    wget \
+    build-essential \
+    openssh-server \
+    openssh-client \
+    nvtop \
+    pdsh \
+    && rm -rf /var/lib/apt/lists/*
+
+# set python3.10 as default
+run update-alternatives --install /usr/bin/python python /usr/bin/python3.10 1 && \
+    update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.10 1
+
+# configure ssh
+run mkdir -p /var/run/sshd && \
+    sed -i 's/#permitrootlogin prohibit-password/permitrootlogin yes/' /etc/ssh/sshd_config && \
+    sed -i 's/#pubkeyauthentication yes/pubkeyauthentication yes/' /etc/ssh/sshd_config
+
+# upgrade pip
+run python -m pip install --upgrade pip setuptools wheel
+
+workdir /workspace
+
+# install pytorch first with cuda 11.8 support
+run pip install torch==2.1.0 torchvision==0.16.0 torchaudio==2.1.0 --index-url https://download.pytorch.org/whl/cu118
+
+# copy and install other dependencies
+copy training/requirements_freeze.txt ./
+run pip install -r requirements_freeze.txt
+
+# copy project code
+copy . .
+
+cmd ["/bin/bash"]
+
