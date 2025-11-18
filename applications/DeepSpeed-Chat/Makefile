@@ -1,13 +1,13 @@
-.PHONY: build env run stop clean shell logs
-
-build:
-	docker compose build --build-arg DOCKERFILE_PATH=$(DOCKERFILE_PATH)
+.PHONY: env build run stop clean shell logs
 
 env:
-	sysctl -w vm.max_map_count=1500000
+	./docker_scripts/make_env.sh
+
+build:
+	./docker_scripts/make_build.sh
 
 run:
-	./make_run.sh
+	docker compose up -d
 
 stop:
 	docker compose down

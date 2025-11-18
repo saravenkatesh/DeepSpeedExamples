@@ -33,7 +33,7 @@ services:
         soft: -1
         hard: -1
     
-    command: /workspace/DeepSpeedExamples/applications/DeepSpeed-Chat/entrypoint.sh
+    command: /workspace/DeepSpeedExamples/applications/DeepSpeed-Chat/docker_scripts/entrypoint.sh
     
     environment:
       - PROJECT_PATH=${PROJECT_PATH:-/workspace}
