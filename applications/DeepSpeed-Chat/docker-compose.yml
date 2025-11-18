@@ -27,7 +27,7 @@ services:
       noproc:
         soft: ${DOCKER_NOPROC_SOFT:-1000000}
         hard: ${DOCKER_NOPROC_HARD:-1000000}
-      # memlock is required both for running large workflows and for integration
+      # Unlimited memlock is required both for running large workflows and for integration
       # with infiniband, so we always set to infinity
       memlock:
         soft: -1
@@ -42,9 +42,7 @@ services:
       - HF_DATASETS_CACHE=${PROJECT_PATH:-/workspace}/.cache/huggingface/datasets
       - NVIDIA_VISIBLE_DEVICES=all
       - NVIDIA_DRIVER_CAPABILITIES=compute,utility
-      # Expose the ports to the container environment
-      # Note that docker doesn't support defining defaults through variables, so any change to port defaults
-      # needs to be made both in the port bindings and in the exposed port variables
+      # Expose ports to the container environment
       - SSH_PORT=${DOCKER_SSH_PORT:-5100}
       - MASTER_PORT=${DOCKER_MASTER_PORT:-29500}
     
