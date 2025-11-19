@@ -5,6 +5,8 @@ services:
       dockerfile: ${DOCKERFILE_PATH:-dockerfiles/Dockerfile-A10-22.04}
     image: deepspeed-training:latest
     container_name: deepspeed-training
+    cap_add:
+      - IPC_LOCK
 
     # Running in network-host mode ensures that the node network is visible to
     # processes within the container.
@@ -21,12 +23,13 @@ services:
     ulimits:
       # Defaults from 
       # https://lambdalabs.atlassian.net/wiki/spaces/HPC/pages/582844431/DeepSpeed+Cluster+ML+Test+Guide#Adjust-file-and-memory-limits-if-necessary-(%3E32-nodes)
+      # The nproc limits may be too agressive for some machines (like A10 VMs on dev hosts)
       nofile:
-        soft: ${DOCKER_NOFILE_SOFT:-2000000}
-        hard: ${DOCKER_NOFILE_HARD:-2000000}
-      noproc:
-        soft: ${DOCKER_NOPROC_SOFT:-1000000}
-        hard: ${DOCKER_NOPROC_HARD:-1000000}
+        soft: ${DOCKER_NOFILE_SOFT:-1000000}
+        hard: ${DOCKER_NOFILE_HARD:-1000000}
+      nproc:
+        soft: ${DOCKER_NOPROC_SOFT:-2000000}
+        hard: ${DOCKER_NOPROC_HARD:-2000000}
       # Unlimited memlock is required both for running large workflows and for integration
       # with infiniband, so we always set to infinity
       memlock:
