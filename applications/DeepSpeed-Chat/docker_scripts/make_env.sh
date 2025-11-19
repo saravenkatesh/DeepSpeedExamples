@@ -14,8 +14,7 @@ apt-get install jq -y
 # Move docker daemon's data-dir to a new spacious mount
 mkdir -p /docker
 mount -t tmpfs -o size=500G tmpfs /docker
-mkdir -p /etc/docker
-touch /etc/docker/daemon_tmp.json /etc/docker/daemon.json
+touch /etc/docker/daemon_tmp.json
 jq '. + {"data-root": "/docker"}' /etc/docker/daemon.json | tee /etc/docker/daemon_tmp.json > /dev/null
 mv /etc/docker/daemon_tmp.json /etc/docker/daemon.json
 sudo systemctl restart docker

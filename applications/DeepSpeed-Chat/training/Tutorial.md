@@ -52,6 +52,17 @@ DOCKER_NOPROC_SOFT=2000000
 DOCKER_NOPROC_HARD=2000000
 ```
 
+Your architecture can be specified by setting an environment variable to the corresponding Dockerfile. Supported architectures
+are listed in `/DeepSpeedExamples/applications/DeepSpeed-Chat/dockerfiles`.  Set the environment variable 
+`DOCKERFILE_PATH` to the path of your chosen Dockerfile, relative to `DeepSpeedExamples/applications/DeepSpeed-Chat`.  For
+example,
+
+```
+DOCKERFILE_PATH=dockerfiles/Dockerfile-B200-22.04
+```
+
+If you do not set `DOCKERFILE_PATH`, the default architecture is `A10` running Ubuntu 22.04.
+
 To configure your environment for large workloads, it is recommended to run 
 
 ```
