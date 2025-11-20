@@ -3,6 +3,11 @@ services:
     build:
       context: .
       dockerfile: ${DOCKERFILE_PATH:-dockerfiles/Dockerfile-A10-22.04}
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - capabilities: [gpu]
     image: deepspeed-training:latest
     container_name: deepspeed-training
     cap_add:
@@ -37,7 +42,10 @@ services:
         hard: -1
     
     command: /workspace/DeepSpeedExamples/applications/DeepSpeed-Chat/docker_scripts/entrypoint.sh
-    
+
+    devices:
+      - "/dev/infiniband:/dev/infiniband"
+   
     environment:
       - PROJECT_PATH=${PROJECT_PATH:-/workspace}
       - HF_HOME=${PROJECT_PATH:-/workspace}/.cache/huggingface
@@ -60,6 +68,12 @@ services:
       # Volume is temporary because we need to change the permissions on .ssh files to root
       # within the container
       - ~/.ssh:/tmp/host_ssh:ro
+
+
+      - "/sys/class/infiniband:/sys/class/infiniband:ro"
+      - "/sys/class/net:/sys/class/net:ro"
+      - "/etc/libibverbs.d:/etc/libibverbs.d:ro"
+
     
     stdin_open: true
     tty: true
